@@ -10,6 +10,16 @@ object RecFun extends RecFunInterface {
       }
       println()
     }
+
+    println("balance strings")
+    println(s"balanced ${balance("()".toList)}")
+    println(s"balanced ${balance("(if (zero? x))".toList)}")
+    println(s"balanced ${balance("(if (zero? x) max (/ 1 x))".toList)}")
+    println(
+      s"balanced ${balance("I told him (that it’s not (yet) done). (But he wasn’t listening)".toList)} "
+    )
+    println(s"not balanced ${balance(":-)".toList)}")
+    println(s"not balanced ${balance("())(".toList)}")
   }
 
   /**
@@ -25,10 +35,24 @@ object RecFun extends RecFunInterface {
     pascalIter(c, r)
   }
 
-  // /**
-  //  * Exercise 2
-  //  */
-  // def balance(chars: List[Char]): Boolean = ???
+  /**
+    * Exercise 2
+    */
+  def balance(chars: List[Char]): Boolean = {
+    def balanceInner(chars: List[Char], currentOpen: Int): Boolean = {
+      if (chars.isEmpty) return currentOpen == 0
+      else {
+        if (chars.head == ')') {
+          if (currentOpen > 0) balanceInner(chars.tail, currentOpen - 1)
+          else false
+        } else if (chars.head == '(')
+          balanceInner(chars.tail, currentOpen + 1)
+        else balanceInner(chars.tail, currentOpen)
+      }
+    }
+
+    balanceInner(chars, 0)
+  }
 
   // /**
   //  * Exercise 3
