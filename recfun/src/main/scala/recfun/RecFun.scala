@@ -10,16 +10,6 @@ object RecFun extends RecFunInterface {
       }
       println()
     }
-
-    println("balance strings")
-    println(s"balanced ${balance("()".toList)}")
-    println(s"balanced ${balance("(if (zero? x))".toList)}")
-    println(s"balanced ${balance("(if (zero? x) max (/ 1 x))".toList)}")
-    println(
-      s"balanced ${balance("I told him (that it’s not (yet) done). (But he wasn’t listening)".toList)} "
-    )
-    println(s"not balanced ${balance(":-)".toList)}")
-    println(s"not balanced ${balance("())(".toList)}")
   }
 
   /**
@@ -40,7 +30,7 @@ object RecFun extends RecFunInterface {
     */
   def balance(chars: List[Char]): Boolean = {
     def balanceInner(chars: List[Char], currentOpen: Int): Boolean = {
-      if (chars.isEmpty) return currentOpen == 0
+      if (chars.isEmpty) currentOpen == 0
       else {
         if (chars.head == ')') {
           if (currentOpen > 0) balanceInner(chars.tail, currentOpen - 1)
@@ -57,5 +47,10 @@ object RecFun extends RecFunInterface {
   // /**
   //  * Exercise 3
   //  */
-  // def countChange(money: Int, coins: List[Int]): Int = ???
+  def countChange(money: Int, coins: List[Int]): Int = {
+    if (money == 0) 1
+    else if (money > 0 && !coins.isEmpty)
+      countChange(money - coins.head, coins) + countChange(money, coins.tail)
+    else 0
+  }
 }
