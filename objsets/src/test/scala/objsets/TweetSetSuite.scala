@@ -59,7 +59,5 @@ class TweetSetSuite {
       assert(!trends.isEmpty)
       assert(trends.head.user == "a" || trends.head.user == "b")
     }
-
-
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
 }
