@@ -90,13 +90,20 @@ object Anagrams extends AnagramsInterface {
     *  in the example above could have been displayed in some other order.
     */
   def combinations(occurrences: Occurrences): List[Occurrences] = {
-    val chars = occurrences.flatMap {
-      case (c, numOccured) => List.fill(numOccured)(c)
+    def getCombinations(o: Occurrences): List[Occurrences] = {
+      o match {
+        case Nil => List(List());
+        case head :: tl => {
+          (for (numOccured <- 0 to head._2; rest <- getCombinations(tl))
+            yield {
+              if (numOccured == 0) rest // filter out the (<char>, 0)
+              else (head._1, numOccured) :: rest
+            }).toList
+        }
+      }
     }
-    chars
-      .combinations(chars.length)
-      .toList
-      .map(w => wordOccurrences(w mkString))
+
+    getCombinations(occurrences)
   }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
@@ -113,23 +120,18 @@ object Anagrams extends AnagramsInterface {
     def subtractInner(x: Occurrences, y: Occurrences): Occurrences = {
       y match {
         case Nil => x;
-        case head :: rest => {
+        case head :: tl => {
           val index = x.indexWhere((x1) => x1._1 == head._1)
-          if (index != -1) {
-            if (x(index)._2 - head._2 > 0) {
-              val x2 = x.updated(index, (x(index)._1, x(index)._2 - head._2))
-              subtractInner(x2, y.tail)
-            } else {
-              val (left, right) = x.splitAt(index)
-              val x3 = left ++ right
-              subtractInner(x3, y.tail)
-            }
-          } else subtractInner(x, y.tail)
+          if (x(index)._2 - head._2 > 0) {
+            val x2 = x.updated(index, (x(index)._1, x(index)._2 - head._2))
+            subtractInner(x2, tl)
+          } else {
+            subtractInner(x.take(index) ++ x.drop(index + 1), tl)
+          }
         }
       }
     }
 
-    println(x)
     subtractInner(x, y)
   }
 
