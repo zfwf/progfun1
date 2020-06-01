@@ -42,7 +42,9 @@ object Anagrams extends AnagramsInterface {
 
   /** Converts a sentence into its character occurrence list. */
   def sentenceOccurrences(s: Sentence): Occurrences = {
-    s.flatMap(w => wordOccurrences(w))
+    val groups =
+      (for (w <- s; o <- wordOccurrences(w)) yield o).toList.groupBy(_._1)
+    groups.map({ case (k, v) => (k, v.length) }).toList.sortBy(_._1)
   }
 
   /** The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
@@ -65,7 +67,7 @@ object Anagrams extends AnagramsInterface {
 
   /** Returns all the anagrams of a given word. */
   def wordAnagrams(word: Word): List[Word] =
-    dictionaryByOccurrences.getOrElse(wordOccurrences(word), List(word))
+    dictionaryByOccurrences.getOrElse(wordOccurrences(word), List())
 
   /** Returns the list of all subsets of the occurrence list.
     *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
@@ -175,7 +177,43 @@ object Anagrams extends AnagramsInterface {
     *
     *  Note: There is only one anagram of an empty sentence.
     */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    def sentenceAnagramsInner(
+        anagrams: List[Sentence],
+        so: Occurrences,
+        comb: List[Occurrences]
+    ): List[Sentence] = {
+      if (so.isEmpty) anagrams
+      else {
+        comb match {
+          case Nil => anagrams
+          case head :: tl => {
+            val words = dictionaryByOccurrences.getOrElse(head, List())
+            if (words.isEmpty) sentenceAnagramsInner(anagrams, so, tl)
+            else {
+              val newAnagrams =
+                for (word <- words; anagram <- anagrams) yield word :: anagram
+              println(so)
+              println(head)
+              val remainingSO = subtract(so, head)
+              println(remainingSO)
+
+              sentenceAnagramsInner(
+                newAnagrams,
+                remainingSO,
+                combinations(remainingSO)
+              )
+            }
+          }
+        }
+      }
+    }
+
+    val so = sentenceOccurrences(sentence)
+    val comb = combinations(so)
+    // println(comb.toSet)
+    sentenceAnagramsInner(List(List()), so, comb)
+  }
 }
 
 object Dictionary {

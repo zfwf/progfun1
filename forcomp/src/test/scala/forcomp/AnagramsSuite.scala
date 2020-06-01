@@ -17,6 +17,21 @@ class AnagramsSuite {
       List(('b', 1), ('e', 1), ('o', 1), ('r', 2), ('t', 1)),
       wordOccurrences("Robert")
     )
+  @Test def `sentenceOccurrences: Linux rulez (5pts)` : Unit =
+    assertEquals(
+      List(
+        ('e', 1),
+        ('i', 1),
+        ('l', 2),
+        ('n', 1),
+        ('r', 1),
+        ('u', 2),
+        ('x', 1),
+        ('z', 1)
+      ),
+      sentenceOccurrences(List("Linux", "rulez"))
+    )
+
   @Test def `sentenceOccurrences: abcd e (5pts)` : Unit =
     assertEquals(
       List(('a', 1), ('b', 1), ('c', 1), ('d', 1), ('e', 1)),
@@ -66,6 +81,21 @@ class AnagramsSuite {
       List(('a', 2), ('b', 2))
     )
     assertEquals(abbacomb.toSet, combinations(abba).toSet)
+  }
+
+  @Test def `combinations: abc (8pts)` : Unit = {
+    val abc = List(('a', 1), ('b', 1), ('c', 1))
+    val abccomb = List(
+      List(),
+      List(('a', 1)),
+      List(('b', 1)),
+      List(('c', 1)),
+      List(('a', 1), ('b', 1)),
+      List(('a', 1), ('c', 1)),
+      List(('b', 1), ('c', 1)),
+      List(('a', 1), ('b', 1), ('c', 1))
+    )
+    assertEquals(abccomb.toSet, combinations(abc).toSet)
   }
 
   @Test def `sentence anagrams: [] (10pts)` : Unit = {
